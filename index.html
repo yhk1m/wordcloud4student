@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>워드 클라우드 - 참여하기</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    html, body {
+      height: 100%;
+    }
+    
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: linear-gradient(135deg, #2d4a6f 0%, #1a2d42 100%);
+      min-height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      padding-bottom: 60px;
+    }
+    
+    .container {
+      background: white;
+      border-radius: 24px;
+      padding: 35px 25px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+    
+    .logo {
+      font-size: 48px;
+      margin-bottom: 10px;
+    }
+    
+    h1 {
+      font-size: 22px;
+      color: #333;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+    
+    .session-title {
+      font-size: 15px;
+      color: #666;
+      margin-bottom: 25px;
+    }
+    
+    .session-code-display {
+      background: #e8eef5;
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 25px;
+    }
+    
+    .session-code-display .label {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 5px;
+    }
+    
+    .session-code-display .code {
+      font-size: 26px;
+      font-weight: 700;
+      color: #2d4a6f;
+      letter-spacing: 4px;
+    }
+    
+    .input-group {
+      position: relative;
+      margin-bottom: 20px;
+    }
+    
+    #wordInput {
+      width: 100%;
+      padding: 16px 60px 16px 18px;
+      font-size: 17px;
+      border: 2px solid #e0e0e0;
+      border-radius: 14px;
+      outline: none;
+      transition: all 0.3s ease;
+      font-family: 'Noto Sans KR', sans-serif;
+      -webkit-appearance: none;
+    }
+    
+    #wordInput:focus {
+      border-color: #2d4a6f;
+      box-shadow: 0 0 0 4px rgba(45, 74, 111, 0.1);
+    }
+    
+    #wordInput::placeholder {
+      color: #aaa;
+    }
+    
+    .char-count {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 12px;
+      color: #aaa;
+    }
+    
+    #submitBtn {
+      width: 100%;
+      padding: 16px;
+      font-size: 17px;
+      font-weight: 600;
+      background: linear-gradient(135deg, #2d4a6f 0%, #1a2d42 100%);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Noto Sans KR', sans-serif;
+      -webkit-appearance: none;
+    }
+    
+    #submitBtn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(45, 74, 111, 0.4);
+    }
+    
+    #submitBtn:active {
+      transform: translateY(0);
+    }
+    
+    #submitBtn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .message {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 14px;
+      display: none;
+    }
+    
+    .message.success {
+      background: #e8f5e9;
+      color: #2e7d32;
+      display: block;
+    }
+    
+    .message.error {
+      background: #ffebee;
+      color: #c62828;
+      display: block;
+    }
+    
+    .submitted-words {
+      margin-top: 25px;
+      text-align: left;
+    }
+    
+    .submitted-words h3 {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 10px;
+    }
+    
+    .word-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    
+    .word-tag {
+      background: linear-gradient(135deg, #2d4a6f 0%, #1a2d42 100%);
+      color: white;
+      padding: 7px 14px;
+      border-radius: 18px;
+      font-size: 13px;
+      animation: popIn 0.3s ease;
+    }
+    
+    @keyframes popIn {
+      0% { transform: scale(0); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    
+    .no-session {
+      padding: 30px 15px;
+    }
+    
+    .no-session .icon {
+      font-size: 56px;
+      margin-bottom: 15px;
+    }
+    
+    .no-session h2 {
+      font-size: 20px;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    
+    .no-session p {
+      color: #666;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+    
+    .loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      gap: 15px;
+    }
+    
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #2d4a6f;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .loading p {
+      color: #666;
+      font-size: 14px;
+    }
+    
+    .submit-success {
+      animation: successPulse 0.5s ease;
+    }
+    
+    @keyframes successPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+      100% { transform: scale(1); }
+    }
+    
+    /* 설정 모달 */
+    .setup-view {
+      padding: 20px 15px;
+    }
+    
+    .setup-view .icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+    
+    .setup-view h2 {
+      font-size: 20px;
+      color: #333;
+      margin-bottom: 20px;
+    }
+    
+    .setup-view input {
+      width: 100%;
+      padding: 14px;
+      font-size: 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      font-family: 'Noto Sans KR', sans-serif;
+      text-align: center;
+    }
+    
+    .setup-view input:focus {
+      outline: none;
+      border-color: #2d4a6f;
+    }
+    
+    .setup-view button {
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      background: linear-gradient(135deg, #2d4a6f 0%, #1a2d42 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+    
+    .setup-view .help-text {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #999;
+      line-height: 1.6;
+    }
+    
+    /* 푸터 */
+    .footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 12px;
+      text-align: center;
+      font-size: 11px;
+      color: rgba(255,255,255,0.7);
+      background: rgba(26, 45, 66, 0.5);
+      backdrop-filter: blur(5px);
+    }
+    
+    .footer a {
+      color: rgba(255,255,255,0.9);
+      text-decoration: none;
+    }
+    
+    .footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- 로딩 화면 -->
+    <div id="loadingView" class="loading" style="display: none;">
+      <div class="spinner"></div>
+      <p>연결 중...</p>
+    </div>
+    
+    <!-- 설정 화면 (API URL 입력) -->
+    <div id="setupView" class="setup-view" style="display: none;">
+      <div class="icon">⚙️</div>
+      <h2>초기 설정</h2>
+      <input type="text" id="apiUrlInput" placeholder="Apps Script 웹앱 URL 입력">
+      <button onclick="saveApiUrl()">저장</button>
+      <p class="help-text">
+        선생님께서 공유해주신 Apps Script 웹앱 URL을 입력하세요.<br>
+        (예: https://script.google.com/macros/s/.../exec)
+      </p>
+    </div>
+    
+    <!-- 메인 화면 -->
+    <div id="mainView" style="display: none;">
+      <div class="logo">💬</div>
+      <h1>워드 클라우드</h1>
+      <p class="session-title" id="sessionTitle">참여하기</p>
+      
+      <div class="session-code-display">
+        <div class="label">세션 코드</div>
+        <div class="code" id="sessionCode">------</div>
+      </div>
+      
+      <div class="input-group">
+        <input type="text" id="wordInput" placeholder="단어를 입력하세요" maxlength="20" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        <span class="char-count"><span id="charCount">0</span>/20</span>
+      </div>
+      
+      <button id="submitBtn">제출하기</button>
+      
+      <div id="message" class="message"></div>
+      
+      <div class="submitted-words" id="submittedSection" style="display: none;">
+        <h3>📝 내가 제출한 단어</h3>
+        <div class="word-tags" id="wordTags"></div>
+      </div>
+    </div>
+    
+    <!-- 세션 없음 화면 -->
+    <div id="noSessionView" class="no-session" style="display: none;">
+      <div class="icon">😴</div>
+      <h2>세션 대기 중</h2>
+      <p>현재 활성화된 세션이 없습니다.<br>선생님이 세션을 시작하면 참여할 수 있습니다.</p>
+    </div>
+    
+    <!-- 에러 화면 -->
+    <div id="errorView" class="no-session" style="display: none;">
+      <div class="icon">⚠️</div>
+      <h2>연결 오류</h2>
+      <p id="errorMessage">서버에 연결할 수 없습니다.</p>
+      <button onclick="location.reload()" style="margin-top: 20px; padding: 12px 24px; background: #2d4a6f; color: white; border: none; border-radius: 10px; font-size: 14px; cursor: pointer;">다시 시도</button>
+    </div>
+  </div>
+  
+  <footer class="footer">
+    ⓒ 2025 충남삼성고등학교 김용현T | <a href="mailto:cnsageo@cnsa.hs.kr">cnsageo@cnsa.hs.kr</a>
+  </footer>
+
+  <script>
+    // =============================================
+    // 설정
+    // =============================================
+    var API_URL = '';
+    var currentSessionCode = '';
+    var submittedWords = [];
+    var isSubmitting = false;
+    
+    // =============================================
+    // 초기화
+    // =============================================
+    document.addEventListener('DOMContentLoaded', function() {
+      init();
+    });
+    
+    function init() {
+      // URL 파라미터에서 세션 코드 가져오기
+      var urlParams = new URLSearchParams(window.location.search);
+      currentSessionCode = urlParams.get('code') || '';
+      
+      // URL 파라미터에서 API URL 가져오기 (있으면)
+      var apiFromUrl = urlParams.get('api');
+      if (apiFromUrl) {
+        API_URL = decodeURIComponent(apiFromUrl);
+        localStorage.setItem('wordcloud_api_url', API_URL);
+      } else {
+        // 로컬 스토리지에서 API URL 가져오기
+        API_URL = localStorage.getItem('wordcloud_api_url') || '';
+      }
+      
+      // 이벤트 리스너
+      document.getElementById('wordInput').addEventListener('input', function() {
+        document.getElementById('charCount').textContent = this.value.length;
+      });
+      
+      document.getElementById('wordInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          submitWord();
+        }
+      });
+      
+      document.getElementById('submitBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        submitWord();
+      });
+      
+      // API URL 없으면 설정 화면 표시
+      if (!API_URL) {
+        showSetupView();
+      } else {
+        checkSession();
+      }
+    }
+    
+    // =============================================
+    // 설정 화면
+    // =============================================
+    function showSetupView() {
+      hideAllViews();
+      document.getElementById('setupView').style.display = 'block';
+    }
+    
+    function saveApiUrl() {
+      var url = document.getElementById('apiUrlInput').value.trim();
+      
+      if (!url) {
+        alert('URL을 입력해주세요.');
+        return;
+      }
+      
+      // URL 유효성 검사
+      if (!url.startsWith('https://script.google.com/')) {
+        alert('올바른 Apps Script URL을 입력해주세요.');
+        return;
+      }
+      
+      API_URL = url;
+      localStorage.setItem('wordcloud_api_url', API_URL);
+      
+      checkSession();
+    }
+    
+    // =============================================
+    // 세션 확인
+    // =============================================
+    function checkSession() {
+      showLoadingView();
+      
+      // JSONP 방식으로 세션 정보 가져오기
+      fetchSessionInfo()
+        .then(function(info) {
+          handleSessionInfo(info);
+        })
+        .catch(function(error) {
+          console.error('Session check error:', error);
+          showErrorView('서버에 연결할 수 없습니다. URL을 확인해주세요.');
+        });
+    }
+    
+    function fetchSessionInfo() {
+      return new Promise(function(resolve, reject) {
+        var url = API_URL + '?action=getSessionInfo&callback=handleSessionCallback&_=' + Date.now();
+        
+        // 기존 콜백 제거
+        if (window.handleSessionCallback) {
+          delete window.handleSessionCallback;
+        }
+        
+        window.handleSessionCallback = function(data) {
+          resolve(data);
+          // 스크립트 태그 제거
+          var script = document.getElementById('sessionScript');
+          if (script) script.remove();
+        };
+        
+        var script = document.createElement('script');
+        script.id = 'sessionScript';
+        script.src = url;
+        script.onerror = function() {
+          reject(new Error('Failed to load'));
+          script.remove();
+        };
+        
+        // 타임아웃 설정
+        setTimeout(function() {
+          if (window.handleSessionCallback) {
+            reject(new Error('Timeout'));
+            script.remove();
+          }
+        }, 10000);
+        
+        document.head.appendChild(script);
+      });
+    }
+    
+    function handleSessionInfo(info) {
+      if (info && info.active) {
+        // 세션 코드 확인
+        if (currentSessionCode && currentSessionCode !== info.code) {
+          // URL의 세션 코드와 현재 활성 세션이 다름
+          showNoSessionView();
+          return;
+        }
+        
+        currentSessionCode = info.code;
+        document.getElementById('sessionCode').textContent = info.code;
+        document.getElementById('sessionTitle').textContent = info.title;
+        showMainView();
+        
+        // 주기적 세션 확인
+        setInterval(checkSessionSilent, 10000);
+      } else {
+        showNoSessionView();
+      }
+    }
+    
+    function checkSessionSilent() {
+      fetchSessionInfo()
+        .then(function(info) {
+          if (!info || !info.active) {
+            showNoSessionView();
+          }
+        })
+        .catch(function() {
+          // 무시
+        });
+    }
+    
+    // =============================================
+    // 단어 제출
+    // =============================================
+    function submitWord() {
+      if (isSubmitting) return;
+      
+      var input = document.getElementById('wordInput');
+      var word = input.value.trim();
+      var btn = document.getElementById('submitBtn');
+      
+      if (!word) {
+        showMessage('단어를 입력해주세요.', 'error');
+        input.focus();
+        return;
+      }
+      
+      isSubmitting = true;
+      btn.disabled = true;
+      btn.textContent = '제출 중...';
+      
+      submitWordToServer(word)
+        .then(function(result) {
+          isSubmitting = false;
+          btn.disabled = false;
+          btn.textContent = '제출하기';
+          
+          if (result && result.success) {
+            showMessage('✓ 제출되었습니다!', 'success');
+            addSubmittedWord(word);
+            input.value = '';
+            document.getElementById('charCount').textContent = '0';
+            
+            // 성공 애니메이션
+            var container = document.querySelector('.container');
+            container.classList.add('submit-success');
+            setTimeout(function() {
+              container.classList.remove('submit-success');
+            }, 500);
+            
+            input.focus();
+          } else {
+            showMessage(result ? result.error : '제출에 실패했습니다.', 'error');
+          }
+        })
+        .catch(function(error) {
+          isSubmitting = false;
+          btn.disabled = false;
+          btn.textContent = '제출하기';
+          showMessage('오류가 발생했습니다. 다시 시도해주세요.', 'error');
+          console.error(error);
+        });
+    }
+    
+    function submitWordToServer(word) {
+      return new Promise(function(resolve, reject) {
+        var callbackName = 'submitCallback_' + Date.now();
+        var url = API_URL + '?action=submitWord&word=' + encodeURIComponent(word) + 
+                  '&sessionCode=' + encodeURIComponent(currentSessionCode) + 
+                  '&callback=' + callbackName + '&_=' + Date.now();
+        
+        window[callbackName] = function(data) {
+          resolve(data);
+          delete window[callbackName];
+          var script = document.getElementById('submitScript');
+          if (script) script.remove();
+        };
+        
+        var script = document.createElement('script');
+        script.id = 'submitScript';
+        script.src = url;
+        script.onerror = function() {
+          reject(new Error('Failed to submit'));
+          delete window[callbackName];
+          script.remove();
+        };
+        
+        document.head.appendChild(script);
+      });
+    }
+    
+    // =============================================
+    // UI 헬퍼
+    // =============================================
+    function hideAllViews() {
+      document.getElementById('loadingView').style.display = 'none';
+      document.getElementById('setupView').style.display = 'none';
+      document.getElementById('mainView').style.display = 'none';
+      document.getElementById('noSessionView').style.display = 'none';
+      document.getElementById('errorView').style.display = 'none';
+    }
+    
+    function showLoadingView() {
+      hideAllViews();
+      document.getElementById('loadingView').style.display = 'flex';
+    }
+    
+    function showMainView() {
+      hideAllViews();
+      document.getElementById('mainView').style.display = 'block';
+    }
+    
+    function showNoSessionView() {
+      hideAllViews();
+      document.getElementById('noSessionView').style.display = 'block';
+    }
+    
+    function showErrorView(message) {
+      hideAllViews();
+      document.getElementById('errorMessage').textContent = message;
+      document.getElementById('errorView').style.display = 'block';
+    }
+    
+    function showMessage(text, type) {
+      var msg = document.getElementById('message');
+      msg.textContent = text;
+      msg.className = 'message ' + type;
+      
+      setTimeout(function() {
+        msg.style.display = 'none';
+        msg.className = 'message';
+      }, 3000);
+    }
+    
+    function addSubmittedWord(word) {
+      submittedWords.push(word);
+      
+      var section = document.getElementById('submittedSection');
+      var container = document.getElementById('wordTags');
+      
+      section.style.display = 'block';
+      
+      var tag = document.createElement('span');
+      tag.className = 'word-tag';
+      tag.textContent = word;
+      container.appendChild(tag);
+    }
+  </script>
+</body>
+</html>
